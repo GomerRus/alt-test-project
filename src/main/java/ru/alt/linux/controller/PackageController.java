@@ -22,7 +22,7 @@ public class PackageController {
     @GetMapping("/branch_binary_packages/{branch}")
     public BranchBinaryPackagesDto getPackages(@PathVariable String branch,
                                                @RequestParam(required = false, defaultValue = "x86_64") String arch) {
-        log.info("Пришел GET запрос на /branch_binary_packages/{}/", branch );
+        log.info("Пришел GET запрос на /branch_binary_packages/{}/", branch);
         return packageService.getPackages(branch, arch);
     }
 }
