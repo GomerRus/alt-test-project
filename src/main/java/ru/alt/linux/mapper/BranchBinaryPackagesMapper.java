@@ -3,7 +3,6 @@ package ru.alt.linux.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.MappingTarget;
 import ru.alt.linux.dto.BranchBinaryPackagesDto;
 import ru.alt.linux.model.PackageEntity;
 

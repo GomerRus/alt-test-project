@@ -3,6 +3,8 @@ package ru.alt.linux.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.alt.linux.dto.BranchBinaryPackagesDto;
+import ru.alt.linux.dto.ComparisonResultDto;
+import ru.alt.linux.dto.TwoBranchesPackagesDto;
 import ru.alt.linux.exception.PackageNotFoundException;
 import ru.alt.linux.mapper.BranchBinaryPackagesMapper;
 import ru.alt.linux.model.PackageEntity;
@@ -26,23 +28,14 @@ public class PackageServiceImpl implements PackageService {
         Map<String, String> requestArgs = Map.of("branch", branch, "arch", arch);
         return branchMapper.toResponseDto(packages, requestArgs);
     }
+
+    @Override
+    public TwoBranchesPackagesDto getListPackages(String branch1, String branch2) {
+        return null;
+    }
+
+    @Override
+    public ComparisonResultDto comparePackages(String branch1, String branch2) {
+        return null;
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
