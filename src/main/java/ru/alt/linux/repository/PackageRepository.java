@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface PackageRepository extends JpaRepository<PackageEntity, Long> {
     List<PackageEntity> findByBranchAndArch(String branch, String arch);
+
+    List<PackageEntity> findByBranch(String branch);
 }
