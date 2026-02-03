@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
 
 @Data
 @Builder
