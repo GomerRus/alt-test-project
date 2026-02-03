@@ -3,11 +3,14 @@ package ru.alt.linux.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.alt.linux.dto.ArchComparisonDto;
 import ru.alt.linux.dto.BranchBinaryPackagesDto;
 import ru.alt.linux.dto.ComparisonResultDto;
 import ru.alt.linux.dto.PackageDto;
+import ru.alt.linux.dto.PaginatedTwoBranchesPackagesDto;
 import ru.alt.linux.dto.TwoBranchesPackagesDto;
 import ru.alt.linux.exception.PackageBadRequestException;
 import ru.alt.linux.exception.PackageNotFoundException;
@@ -105,6 +108,28 @@ public class PackageServiceImpl implements PackageService {
                 .archComparisons(comparisons)
                 .build();
     }
+
+    @Override
+    public PaginatedTwoBranchesPackagesDto getPaginatedListPackages(String branch1, String branch2, Pageable pageable) {
+        if (branch1.isEmpty() || branch2.isEmpty()) {
+            throw new PackageBadRequestException("Branch parameters must not be empty");
+        }
+
+        Page<PackageDto> b1Dto = packageMapper.toDtoPage(
+                packageRepository.findByBranchWithPagination(branch1, pageable));
+        Page<PackageDto> b2Dto = packageMapper.toDtoPage(
+                packageRepository.findByBranchWithPagination(branch1, pageable));
+
+        if (b1Dto.isEmpty() || b2Dto.isEmpty()) {
+            throw new PackageNotFoundException("No packages found for one or both branches");
+        }
+
+        return PaginatedTwoBranchesPackagesDto.builder()
+                .branch1(b1Dto)
+                .branch2(b2Dto)
+                .build();
+    }
+
 
     private List<PackageDto> findPackagesOnlyFirstBranch(List<PackageDto> branch1, List<PackageDto> branch2) {
         Map<String, PackageDto> branch2Map = branch2.stream()

@@ -2,6 +2,8 @@ package ru.alt.linux.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.alt.linux.dto.BranchBinaryPackagesDto;
 import ru.alt.linux.dto.ComparisonResultDto;
+import ru.alt.linux.dto.PaginatedTwoBranchesPackagesDto;
 import ru.alt.linux.dto.TwoBranchesPackagesDto;
 import ru.alt.linux.service.PackageService;
 
@@ -43,4 +46,12 @@ public class PackageController {
 
         return packageService.comparePackages(branch1, branch2);
     }
+
+    @GetMapping("/list-paginated/{branch1}/{branch2}")
+    public PaginatedTwoBranchesPackagesDto getPaginatedListPackages(@PathVariable("branch1") String branch1,
+                                                                    @PathVariable("branch2") String branch2,
+                                                                    @PageableDefault(size = 10) Pageable pageable) {
+        return packageService.getPaginatedListPackages(branch1, branch2, pageable);
+    }
+
 }
