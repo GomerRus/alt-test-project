@@ -1,0 +1,20 @@
+services:
+  web:
+    image: postgres:16.1
+    container_name: alt-web
+    ports:
+      - "6433:5432"
+    environment:
+      - POSTGRES_DB=alt_test_db
+      - POSTGRES_USER=altuser
+      - POSTGRES_PASSWORD=altpassword
+
+  cli:
+    image: postgres:16.1
+    container_name: alt-cli
+    ports:
+      - "6432:5432"
+    environment:
+      - POSTGRES_DB=alt_test_db
+      - POSTGRES_USER=altuser
+      - POSTGRES_PASSWORD=altpassword
