@@ -1,0 +1,12 @@
+server:
+  port: 9090
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:6433/alt_test_db
+    username: altuser
+    password: altpassword
+  sql:
+    init:
+      mode: always
