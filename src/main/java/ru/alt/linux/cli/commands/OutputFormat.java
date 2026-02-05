@@ -1,6 +1,7 @@
 package ru.alt.linux.cli.commands;
 
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 import ru.alt.linux.dto.ArchComparisonDto;
 import ru.alt.linux.dto.BranchBinaryPackagesDto;
 import ru.alt.linux.dto.ComparisonResultDto;
@@ -11,6 +12,7 @@ import ru.alt.linux.dto.TwoBranchesPackagesDto;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class OutputFormat {
     public String formatBranchBinaryPackages(BranchBinaryPackagesDto dto) {
         StringBuilder sb = new StringBuilder();

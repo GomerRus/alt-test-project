@@ -14,5 +14,5 @@ public interface PackageRepository extends JpaRepository<PackageEntity, Long> {
 
     List<PackageEntity> findByBranch(String branch);
 
-    Page<PackageEntity> findByBranchWithPagination(String branch, Pageable pageable);
+    Page<PackageEntity> findByBranch(String branch, Pageable pageable);
 }

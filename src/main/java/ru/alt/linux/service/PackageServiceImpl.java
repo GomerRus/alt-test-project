@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PackageServiceImpl implements PackageService {
     PackageRepository packageRepository;
     BranchBinaryPackagesMapper branchMapper;
@@ -42,6 +42,8 @@ public class PackageServiceImpl implements PackageService {
             throw new PackageNotFoundException(String.format("No packages found branch - %s and arch - %s", branch, arch));
         }
         Map<String, String> requestArgs = Map.of("branch", branch, "arch", arch);
+        System.out.println("Количество пакетов перед возвратом: " + packages.size());
+        packages.forEach(p -> System.out.println(p.getName()));
         return branchMapper.toResponseDto(packages, requestArgs);
     }
 
@@ -116,9 +118,9 @@ public class PackageServiceImpl implements PackageService {
         }
 
         Page<PackageDto> b1Dto = packageMapper.toDtoPage(
-                packageRepository.findByBranchWithPagination(branch1, pageable));
+                packageRepository.findByBranch(branch1, pageable));
         Page<PackageDto> b2Dto = packageMapper.toDtoPage(
-                packageRepository.findByBranchWithPagination(branch1, pageable));
+                packageRepository.findByBranch(branch1, pageable));
 
         if (b1Dto.isEmpty() || b2Dto.isEmpty()) {
             throw new PackageNotFoundException("No packages found for one or both branches");
@@ -144,7 +146,7 @@ public class PackageServiceImpl implements PackageService {
         Map<String, PackageDto> branch1Map = branch1.stream()
                 .collect(Collectors.toMap(PackageDto::getName, p -> p));
 
-        return branch1.stream()
+        return branch2.stream()
                 .filter(p -> !branch1Map.containsKey(p.getName()))
                 .toList();
     }

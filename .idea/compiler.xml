@@ -20,7 +20,11 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="business-logic" target="21" />
+      <module name="cli-module" target="21" />
+      <module name="db-schema-module" target="21" />
       <module name="src" target="21" />
+      <module name="web-module" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
