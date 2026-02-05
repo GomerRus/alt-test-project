@@ -1,0 +1,172 @@
+package ru.alt.linux.service;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import ru.alt.linux.dto.ArchComparisonDto;
+import ru.alt.linux.dto.BranchBinaryPackagesDto;
+import ru.alt.linux.dto.ComparisonResultDto;
+import ru.alt.linux.dto.PackageDto;
+import ru.alt.linux.dto.PaginatedTwoBranchesPackagesDto;
+import ru.alt.linux.dto.TwoBranchesPackagesDto;
+import ru.alt.linux.exception.PackageBadRequestException;
+import ru.alt.linux.exception.PackageNotFoundException;
+import ru.alt.linux.mapper.BranchBinaryPackagesMapper;
+import ru.alt.linux.mapper.PackageMapper;
+import ru.alt.linux.model.PackageEntity;
+import ru.alt.linux.repository.PackageRepository;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class PackageServiceImpl implements PackageService {
+    PackageRepository packageRepository;
+    BranchBinaryPackagesMapper branchMapper;
+    PackageMapper packageMapper;
+
+    @Override
+    public BranchBinaryPackagesDto getPackages(String branch, String arch) {
+        List<PackageEntity> packages = packageRepository.findByBranchAndArch(branch, arch);
+        if (packages.isEmpty()) {
+            throw new PackageNotFoundException(String.format("No packages found branch - %s and arch - %s", branch, arch));
+        }
+        Map<String, String> requestArgs = Map.of("branch", branch, "arch", arch);
+        System.out.println("Количество пакетов перед возвратом: " + packages.size());
+        packages.forEach(p -> System.out.println(p.getName()));
+        return branchMapper.toResponseDto(packages, requestArgs);
+    }
+
+    @Override
+    public TwoBranchesPackagesDto getListPackages(String branch1, String branch2) {
+        if (branch1.isEmpty() || branch2.isEmpty()) {
+            throw new PackageBadRequestException("Branch parameters must not be empty");
+        }
+
+        List<PackageDto> branch1Packages = packageRepository.findByBranch(branch1)
+                .stream()
+                .map(packageMapper::toDto)
+                .toList();
+
+        List<PackageDto> branch2Packages = packageRepository.findByBranch(branch2)
+                .stream()
+                .map(packageMapper::toDto)
+                .toList();
+
+        if (branch1Packages.isEmpty() || branch2Packages.isEmpty()) {
+            throw new PackageNotFoundException("No packages found for one or both branches");
+        }
+
+        return TwoBranchesPackagesDto.builder()
+                .branch1(branch1Packages)
+                .branch2(branch2Packages)
+                .build();
+    }
+
+    @Override
+    public ComparisonResultDto comparePackages(String branch1, String branch2) {
+        TwoBranchesPackagesDto branchPackages = getListPackages(branch1, branch2);
+        List<PackageDto> b1List = branchPackages.getBranch1();
+        List<PackageDto> b2List = branchPackages.getBranch2();
+
+        Map<String, List<PackageDto>> b1ByArch = b1List.stream()
+                .collect(Collectors.groupingBy(PackageDto::getArch));
+        Map<String, List<PackageDto>> b2ByArch = b2List.stream()
+                .collect(Collectors.groupingBy(PackageDto::getArch));
+
+        Set<String> allArchs = new HashSet<>();
+        allArchs.addAll(b1ByArch.keySet());
+        allArchs.addAll(b2ByArch.keySet());
+
+        List<ArchComparisonDto> comparisons = new ArrayList<>();
+
+        for (String arch : allArchs) {
+            List<PackageDto> b1Packs = b1ByArch.getOrDefault(arch, Collections.emptyList());
+            List<PackageDto> b2Packs = b2ByArch.getOrDefault(arch, Collections.emptyList());
+
+            List<PackageDto> onlyInB1 = findPackagesOnlyFirstBranch(b1Packs, b2Packs);
+            List<PackageDto> onlyInB2 = findPackagesOnlySecondBranch(b1Packs, b2Packs);
+            List<PackageDto> greaterB1 = findNewerVersionsInFirstBranch(b1Packs, b2Packs);
+
+            comparisons.add(ArchComparisonDto.builder()
+                    .arch(arch)
+                    .onlyInBranch1(onlyInB1)
+                    .onlyInBranch2(onlyInB2)
+                    .versionGreaterInBranch1(greaterB1)
+                    .build());
+        }
+
+        return ComparisonResultDto.builder()
+                .archComparisons(comparisons)
+                .build();
+    }
+
+    @Override
+    public PaginatedTwoBranchesPackagesDto getPaginatedListPackages(String branch1, String branch2, Pageable pageable) {
+        if (branch1.isEmpty() || branch2.isEmpty()) {
+            throw new PackageBadRequestException("Branch parameters must not be empty");
+        }
+
+        Page<PackageDto> b1Dto = packageMapper.toDtoPage(
+                packageRepository.findByBranch(branch1, pageable));
+        Page<PackageDto> b2Dto = packageMapper.toDtoPage(
+                packageRepository.findByBranch(branch1, pageable));
+
+        if (b1Dto.isEmpty() || b2Dto.isEmpty()) {
+            throw new PackageNotFoundException("No packages found for one or both branches");
+        }
+
+        return PaginatedTwoBranchesPackagesDto.builder()
+                .branch1(b1Dto)
+                .branch2(b2Dto)
+                .build();
+    }
+
+
+    private List<PackageDto> findPackagesOnlyFirstBranch(List<PackageDto> branch1, List<PackageDto> branch2) {
+        Map<String, PackageDto> branch2Map = branch2.stream()
+                .collect(Collectors.toMap(PackageDto::getName, p -> p));
+
+        return branch1.stream()
+                .filter(p -> !branch2Map.containsKey(p.getName()))
+                .toList();
+    }
+
+    private List<PackageDto> findPackagesOnlySecondBranch(List<PackageDto> branch1, List<PackageDto> branch2) {
+        Map<String, PackageDto> branch1Map = branch1.stream()
+                .collect(Collectors.toMap(PackageDto::getName, p -> p));
+
+        return branch2.stream()
+                .filter(p -> !branch1Map.containsKey(p.getName()))
+                .toList();
+    }
+
+    private List<PackageDto> findNewerVersionsInFirstBranch(List<PackageDto> branch1, List<PackageDto> branch2) {
+        Map<String, PackageDto> branch2Map = branch2.stream()
+                .collect(Collectors.toMap(PackageDto::getName, p -> p));
+        return branch1.stream()
+                .filter(p -> branch2Map.containsKey(p.getName()))
+                .filter(p -> comparePackageVersions(p, branch2Map.get(p.getName())) > 0)
+                .toList();
+    }
+
+    private int comparePackageVersions(PackageDto p1, PackageDto p2) {
+        int epoch = Integer.compare(p1.getEpoch(), p2.getEpoch());
+        if (epoch != 0) return epoch;
+
+        int version = p1.getVersion().compareTo(p2.getVersion());
+        if (version != 0) return version;
+
+        return p1.getRelease().compareTo(p2.getRelease());
+    }
+}
