@@ -1,0 +1,4 @@
+ru/alt/linux/cli/commands/OutputFormat.class
+ru/alt/linux/cli/commands/PackageCommands.class
+ru/alt/linux/cli/config/AppConfig.class
+ru/alt/linux/cli/CliApplication.class

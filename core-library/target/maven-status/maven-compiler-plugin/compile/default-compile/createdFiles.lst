@@ -1,0 +1,12 @@
+ru/alt/linux/core/api/ApiClient.class
+ru/alt/linux/core/exception/PackageBadRequestException.class
+ru/alt/linux/core/service/PackageServiceImpl.class
+ru/alt/linux/core/dto/ComparisonResultDto.class
+ru/alt/linux/core/api/ApiClient$1.class
+ru/alt/linux/core/exception/PackageNotFoundException.class
+ru/alt/linux/core/dto/ArchComparisonDto$ArchComparisonDtoBuilder.class
+ru/alt/linux/core/dto/PackageDto$PackageDtoBuilder.class
+ru/alt/linux/core/dto/ComparisonResultDto$ComparisonResultDtoBuilder.class
+ru/alt/linux/core/service/PackageService.class
+ru/alt/linux/core/dto/PackageDto.class
+ru/alt/linux/core/dto/ArchComparisonDto.class
