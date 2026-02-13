@@ -1,0 +1,8 @@
+/home/gomer/OpenideProjects/alt-test-project/core-library/src/main/java/ru/alt/linux/core/api/ApiClient.java
+/home/gomer/OpenideProjects/alt-test-project/core-library/src/main/java/ru/alt/linux/core/service/PackageService.java
+/home/gomer/OpenideProjects/alt-test-project/core-library/src/main/java/ru/alt/linux/core/dto/ArchComparisonDto.java
+/home/gomer/OpenideProjects/alt-test-project/core-library/src/main/java/ru/alt/linux/core/exception/PackageNotFoundException.java
+/home/gomer/OpenideProjects/alt-test-project/core-library/src/main/java/ru/alt/linux/core/service/PackageServiceImpl.java
+/home/gomer/OpenideProjects/alt-test-project/core-library/src/main/java/ru/alt/linux/core/dto/ComparisonResultDto.java
+/home/gomer/OpenideProjects/alt-test-project/core-library/src/main/java/ru/alt/linux/core/dto/PackageDto.java
+/home/gomer/OpenideProjects/alt-test-project/core-library/src/main/java/ru/alt/linux/core/exception/PackageBadRequestException.java

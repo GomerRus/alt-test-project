@@ -3,6 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/alt-test-project.iml" filepath="$PROJECT_DIR$/.idea/alt-test-project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/business-logic.iml" filepath="$PROJECT_DIR$/business-logic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cli-module.iml" filepath="$PROJECT_DIR$/cli-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/db-schema-module.iml" filepath="$PROJECT_DIR$/db-schema-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web-module.iml" filepath="$PROJECT_DIR$/web-module.iml" />
     </modules>
   </component>
 </project>
